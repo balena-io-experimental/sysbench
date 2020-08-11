@@ -1,0 +1,6 @@
+FROM balenalib/%%BALENA_MACHINE_NAME%%-debian:stretch
+
+RUN install_packages sysbench jq
+COPY test.sh .
+
+CMD ["bash","test.sh"]
