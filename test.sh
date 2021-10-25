@@ -6,6 +6,7 @@ jq ".d | .[0] | .id")
 
 
 MEMORY=$(sysbench --test=memory --memory-total-size=2G run | grep "total time:" | sed 's/[^0-9.]*//g')
+MEMORYSPD=$(sysbench --test=memory --memory-total-size=2G run | grep "transferred (" | grep -E -o "[0-9]+\.[0-9]+" | tail -1)
 CPU=$(sysbench --test=cpu --cpu-max-prime=5000 run | grep "total time:" | sed 's/[^0-9.]*//g')
 THREADS=$(sysbench --test=threads run | grep "total time:" | sed 's/[^0-9.]*//g')
 
@@ -19,6 +20,13 @@ curl -sX POST \
 -H "Content-Type: application/json" \
 -H "Authorization: Bearer $BALENA_API_KEY" \
 --data "{ \"device\": \"$ID\", \"tag_key\": \"Memory\", \"value\": \"$MEMORY\" }" > /dev/null
+
+curl -sX POST \
+"https://api.balena-cloud.com/v5/device_tag" \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer $BALENA_API_KEY" \
+--data "{ \"device\": \"$ID\", \"tag_key\": \"MemorySpeed\", \"value\": \"$MEMORYSPD\" }" > /dev/null
+
 
 curl -sX POST \
 "https://api.balena-cloud.com/v5/device_tag" \
